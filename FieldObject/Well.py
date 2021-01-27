@@ -28,3 +28,6 @@ class WellConstructor:
             for inflow_zone in inflow_zones:
                 WellConstructor.add_zone(well, inflow_zone)
         return well
+
+    def add_info(self, df: pd.DataFrame) -> None:
+        pass

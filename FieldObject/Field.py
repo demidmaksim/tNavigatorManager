@@ -49,6 +49,8 @@ class FieldConstructor:
             FieldConstructor.add_inflowzone(field, inflowzone)
         return field
 
+    @staticmethod
+    def create_test_field(self) -> Field:
+        field = FieldConstructor.create_field()
 
-field1 = FieldConstructor.create_field()
-field1.report()
+        return field

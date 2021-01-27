@@ -1,6 +1,5 @@
 from BaseFunction.ReadHelperFunctions.KeyWordSet import *
 from BaseFunction.Crutch import *
-from Eclipse_Binary_Parser import *
 
 
 def read_additional_schedule() -> dict:
