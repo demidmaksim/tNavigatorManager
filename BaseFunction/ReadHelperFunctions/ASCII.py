@@ -1,4 +1,4 @@
-KeyWords = ['INFLOWZO']
+KeyWords = ['INFLOWZO', 'BOUNDS']
 
 
 def this_is_skip(line) -> bool:
@@ -24,7 +24,12 @@ def clean_from_comment(line: str) -> str:
 
 
 def this_is_end_keyword(line: str) -> bool:
-    if line.split()[0] == '/':
+    if line == '':
+        return False
+    else:
+        pass
+
+    if line.split()[0].lower() == 'end':
         return True
     else:
         return False

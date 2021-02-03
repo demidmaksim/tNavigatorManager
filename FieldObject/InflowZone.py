@@ -12,6 +12,10 @@ class InflowZone:
         self.segment = int(segment)
         self.device_type = device_type
         self.fully_open_size = float(fully_open_size)
+        self.param = pd.DataFrame()
+
+    def get_param(self, param: str):
+        return self.param[param]
 
 
 class InflowZoneConstructor:

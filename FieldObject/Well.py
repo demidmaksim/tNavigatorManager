@@ -1,4 +1,5 @@
 from FieldObject.InflowZone import *
+from typing import Dict
 
 
 class Well:
@@ -6,10 +7,16 @@ class Well:
         if bounds is None:
             bounds = [0, 2000]
         self.Crutch = Crutch()
-        self.name = name
-        self.InflowZones = dict()
+        self.name: str = name
+        self.InflowZones: Dict[int, InflowZone] = dict()
         self.params = pd.DataFrame()
         self.bounds = bounds
+
+    def get_param(self, param: str, inflow_zones: int or None = None):
+        if inflow_zones:
+            return self.params[param]
+        else:
+            return self.InflowZones[inflow_zones].get_param(param)
 
 
 class WellConstructor:
