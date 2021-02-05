@@ -15,8 +15,7 @@ def read_additional_schedule() -> dict:
                 pass
 
             elif this_is_keyword(line):
-                target_function = get_fun(line)
-                keyword_data[line] = target_function(list_file)
+                keyword_data[line] = read_keyword(list_file, line)
 
     return keyword_data
 
