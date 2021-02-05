@@ -19,6 +19,6 @@ class ScheduleConstructor:
 
         if 'MAKEGROUPLIST' in additional_data.keys():
             groups = additional_data['MAKEGROUPLIST']
-            schedule.bounds = pd.DataFrame.from_dict(groups)
+            schedule.groups = pd.DataFrame.from_dict(groups)
 
         return schedule

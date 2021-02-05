@@ -95,6 +95,12 @@ dict_for_fun = {
 }
 
 
+def this_is_keyword(line: str) -> bool:
+    if line.split()[0].upper() in dict_for_fun.keys():
+        return True
+    else:
+        return False
+
 def read_keyword(list_file: list, key: str) -> list:
     data = []
 

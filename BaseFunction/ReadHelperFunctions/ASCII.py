@@ -1,15 +1,7 @@
-KeyWords = ['INFLOWZO', 'BOUNDS', 'MAKEGROUPLIST']
 
 
 def this_is_skip(line) -> bool:
     if line == '' or line[:2] == '--':
-        return True
-    else:
-        return False
-
-
-def this_is_keyword(line: str) -> bool:
-    if line.split()[0].upper() in KeyWords:
         return True
     else:
         return False
