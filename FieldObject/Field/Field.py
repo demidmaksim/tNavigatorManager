@@ -1,5 +1,6 @@
 from FieldObject.Well import *
 from BaseFunction.Loader import *
+from FieldObject.Schedule import *
 from FieldObject.Field.Field_Assistant import *
 from scipy.optimize import Bounds
 import numpy as np
@@ -11,6 +12,7 @@ class Field:
         self.name: str = name
         self.wells = dict()
         self.bounds: dict or None = None
+        self.Schedule = None
 
     def report(self):
         print(F'Name field: {self.name}')
@@ -24,7 +26,7 @@ class Field:
                       f'Bore: {inflowzone.bore}\t'
                       f'Device Type: {inflowzone.device_type}')
         print('-'*50)
-
+        '''
         if self.bounds:
             for bound in self.bounds:
                 inflow_zones = bound['inflow zones']
@@ -41,6 +43,13 @@ class Field:
                       f'{bound["min liquid"]} < '
                       f'{for_report}'
                       f' > {bound["max liquid"]}')
+        '''
+
+        print('-'*30)
+        print(self.Schedule.bounds)
+
+        print('-'*30)
+        print(self.Schedule.groups)
 
     def get_pattern(self) -> list:
         pattern = []
@@ -70,8 +79,9 @@ class FieldConstructor:
         field.wells[well.name] = well
 
     @staticmethod
-    def add_bounds(field: Field, bounds: dict):
-        field.bounds = bounds
+    def add_schedule(field: Field, additional_data: dict):
+        schedule = ScheduleConstructor.create_schedule(additional_data)
+        field.Schedule = schedule
 
     @staticmethod
     def add_inflowzone(field: Field, inflowzone: InflowZone):
@@ -92,7 +102,7 @@ class FieldConstructor:
             inflowzone = InflowZoneConstructor.from_dict(inflowzone)
             FieldConstructor.add_inflowzone(field, inflowzone)
 
-        FieldConstructor.add_bounds(field, additional_data['BOUNDS'])
+        FieldConstructor.add_schedule(field, additional_data)
 
         return field
 
