@@ -31,24 +31,24 @@ def __read_construction(line: list) -> dict:
 def __read_bounds(line: list) -> dict:
 
     try:
-        inflow_zones = [None, None]
-        for inflow_zone in line[1:-3]:
-            if ':' in inflow_zone:
-                well = inflow_zone.split(':')[0]
-                inflow_zone = inflow_zone.split(':')[1]
+        well_node = [None, None]
+        for well_segment in line[1:-3]:
+            if ':' in well_segment:
+                well = well_segment.split(':')[0]
+                well_segment = well_segment.split(':')[1]
             else:
-                well = inflow_zone
-                inflow_zone = None
+                well = well_segment
+                well_segment = None
 
-            inflow_zones = [well, inflow_zone]
+            well_node = [well, well_segment]
 
         date = line[0]
         fluid, min_liquid, max_liquid = line[-3], line[-2], line[-1]
 
         border = {
             'date': date,
-            'well': inflow_zones[0],
-            'valve/segment': inflow_zones[1],
+            'well': well_node[0],
+            'valve/segment': well_node[1],
             'min liquid': min_liquid,
             'max liquid': max_liquid,
             'fluid': fluid
@@ -74,7 +74,7 @@ def __read_group_list(line: list):
     try:
         groups[line[0]] = line[1:]
     except IndexError:
-        print('Mistake in BOUNDS keyword')
+        print('Mistake in Group List keyword')
 
     maximum = 0
     for key in groups.keys():
@@ -101,6 +101,7 @@ def this_is_keyword(line: str) -> bool:
     else:
         return False
 
+
 def read_keyword(list_file: list, key: str) -> list:
     data = []
 
@@ -123,10 +124,10 @@ def read_keyword(list_file: list, key: str) -> list:
 
         if this_is_end_keyword(line):
             break
-
-        line = line.split()
-        target_function = dict_for_fun[key]
-        d = target_function(line)
-        data.append(d)
+        if not this_is_skip(line):
+            line = line.split()
+            target_function = dict_for_fun[key]
+            d = target_function(line)
+            data.append(d)
 
     return data

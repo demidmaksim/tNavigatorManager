@@ -1,10 +1,6 @@
 from FieldObject.Well import *
 from BaseFunction.Loader import *
-from FieldObject.Schedule import *
-from FieldObject.Field.Field_Assistant import *
-from scipy.optimize import Bounds
-import numpy as np
-from scipy.optimize import LinearConstraint
+from AdditionalSchedule.Schedule import *
 
 
 class Field:
@@ -25,31 +21,8 @@ class Field:
                 print(f'\t|\t inflowzone: {inflowzone.segment}\t'
                       f'Bore: {inflowzone.bore}\t'
                       f'Device Type: {inflowzone.device_type}')
-        print('-'*50)
-        '''
-        if self.bounds:
-            for bound in self.bounds:
-                inflow_zones = bound['inflow zones']
-                data_for_report = []
-                for inflow_zone in inflow_zones:
-                    if inflow_zone[1]:
-                        data_for_report.append(f'{inflow_zone[0]}:'
-                                               f'{inflow_zone[1]}')
-                    else:
-                        data_for_report.append(f'{inflow_zone[0]}')
 
-                for_report = ' + '.join(data_for_report)
-                print(f'bound: {bound["fluid"]}\t'
-                      f'{bound["min liquid"]} < '
-                      f'{for_report}'
-                      f' > {bound["max liquid"]}')
-        '''
-
-        print('-'*30)
-        print(self.Schedule.bounds)
-
-        print('-'*30)
-        print(self.Schedule.groups)
+        self.Schedule.report()
 
     def get_pattern(self) -> list:
         pattern = []
@@ -63,9 +36,6 @@ class Field:
                 pattern.append([well_name, inflow_zone])
 
         return pattern
-
-    def get_bounds(self):
-        pass
 
 
 class FieldConstructor:

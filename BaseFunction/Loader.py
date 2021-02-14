@@ -18,8 +18,3 @@ def read_additional_schedule() -> dict:
                 keyword_data[line] = read_keyword(list_file, line)
 
     return keyword_data
-
-
-def read_smspec_file(link: str = None):
-    # TODO
-    link = r'C:\Users\vfrcl\Desktop\Assistant_Simulated\For_Test\Light.SMSPEC'
