@@ -1,6 +1,6 @@
-from FieldObject.Well import *
-from BaseFunction.Loader import *
-from AdditionalSchedule.Schedule import *
+from ManagementObject.Well import *
+from BaseFunction.Readers.Loader import *
+from ManagementObject.AdditionalSchedule.Schedule import *
 
 
 class Field:
@@ -9,6 +9,30 @@ class Field:
         self.wells: dict = dict()
         self.bounds: DebitLimits or None = None
         self.Schedule: Schedule or None = None
+
+    def get_pattern(self) -> list:
+        pattern = []
+        wells = list(self.wells.keys())
+        wells.sort()
+
+        for well_name in wells:
+            inflow_zones = list(self.wells[well_name].InflowZones.keys())
+            inflow_zones.sort()
+            for inflow_zone in inflow_zones:
+                pattern.append([well_name, inflow_zone])
+
+        return pattern
+
+    def get_params(self, pattern: list, param: str) -> list:
+        params_list = []
+
+        for object_id in pattern:
+            well = object_id[0]
+            inflow_zones = object_id[1]
+            param = self.wells[well].get_param(param, inflow_zones)
+            params_list.append(param)
+
+        return params_list
 
     def report(self):
         print(F'Name field: {self.name}')
@@ -23,19 +47,6 @@ class Field:
                       f'Device Type: {inflowzone.device_type}')
 
         self.Schedule.report()
-
-    def get_pattern(self) -> list:
-        pattern = []
-        wells = list(self.wells.keys())
-        wells.sort()
-
-        for well_name in wells:
-            inflow_zones = list(self.wells[well_name].InflowZones.keys())
-            inflow_zones.sort()
-            for inflow_zone in inflow_zones:
-                pattern.append([well_name, inflow_zone])
-
-        return pattern
 
 
 class FieldConstructor:
@@ -77,7 +88,7 @@ class FieldConstructor:
         return field
 
     @staticmethod
-    def create_test_field(self) -> Field:
+    def create_test_field() -> Field:
         field = FieldConstructor.create_field()
 
         return field

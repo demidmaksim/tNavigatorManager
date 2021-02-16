@@ -1,4 +1,4 @@
-from BaseFunction.ReadHelperFunctions.ASCII import*
+from BaseFunction.Readers.ReadHelperFunctions.ASCII import*
 
 
 def __read_construction(line: list) -> dict:

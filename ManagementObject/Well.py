@@ -1,12 +1,13 @@
-from FieldObject.InflowZone import *
+from ManagementObject.InflowZone import *
 from typing import Dict
+import pandas as pd
 
 
 class Well:
     def __init__(self, name, bounds=None):
         if bounds is None:
             bounds = [0, 2000]
-        self.Crutch = Crutch()
+
         self.name: str = name
         self.InflowZones: Dict[int, InflowZone] = dict()
         self.params = pd.DataFrame()

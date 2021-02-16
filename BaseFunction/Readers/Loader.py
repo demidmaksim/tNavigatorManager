@@ -1,5 +1,5 @@
-from BaseFunction.ReadHelperFunctions.KeyWordSet import *
-from BaseFunction.Crutch import *
+from BaseFunction.Readers.ReadHelperFunctions.KeyWordSet import *
+from For_Delite.Crutch import *
 
 
 def read_additional_schedule() -> dict:

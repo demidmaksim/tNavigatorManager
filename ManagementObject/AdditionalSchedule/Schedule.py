@@ -1,5 +1,4 @@
-import datetime as dt
-from AdditionalSchedule.MyLinearConstraint import *
+from ManagementObject.AdditionalSchedule.MyLinearConstraint import *
 
 
 class Schedule:

@@ -1,12 +1,12 @@
 import numpy as np
-from BaseFunction.Crutch import *
+import pandas as pd
 
 
 class InflowZone:
     def __init__(self, well: str, bore: str,
                  segment: str, device_type: str,
                  fully_open_size: str):
-        self.Crutch = Crutch()
+
         self.well = well
         self.bore = bore
         self.segment = int(segment)

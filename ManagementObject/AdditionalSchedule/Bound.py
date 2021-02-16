@@ -28,7 +28,7 @@ class DebitLimits:
         new_df = self.df[pattern]
 
         if new_df.shape[0] != 0:
-            print(new_df)
+
             for_series = {
                 DebitLimits.date: date,
                 DebitLimits.well: new_df[DebitLimits.well].values[-1],

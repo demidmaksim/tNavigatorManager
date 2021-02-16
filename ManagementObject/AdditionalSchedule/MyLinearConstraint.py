@@ -1,4 +1,4 @@
-from AdditionalSchedule.Bound import *
+from ManagementObject.AdditionalSchedule.Bound import *
 from scipy.optimize import LinearConstraint
 import datetime as dt
 import numpy as np
@@ -21,8 +21,8 @@ class MyLinearConstraint:
         self.__fluid_type.append(__fluid_type)
 
     def calculate_water_cut(self, water_cut: np.array):
-        self.__A = np.array(self.__A)
-        for line_id, line in self.__fluid_type:
+        self.__A = np.array(self.__A, dtype=float)
+        for line_id, line in enumerate(self.__fluid_type):
             if line == 'OIL':
                 self.__A[line_id, :] = self.__A[line_id, :] * (1 - water_cut)
             elif line == 'WATER':
