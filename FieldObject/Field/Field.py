@@ -30,7 +30,7 @@ class Field:
         wells.sort()
 
         for well_name in wells:
-            inflow_zones = self.wells[well_name].InflowZones.keys()
+            inflow_zones = list(self.wells[well_name].InflowZones.keys())
             inflow_zones.sort()
             for inflow_zone in inflow_zones:
                 pattern.append([well_name, inflow_zone])

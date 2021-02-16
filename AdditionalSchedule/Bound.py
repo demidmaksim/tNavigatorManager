@@ -6,8 +6,8 @@ class DebitLimits:
     well = 'well'
     valve = 'valve/segment'
     date = 'date'
-    min_liq = 'min liquid'
-    max_liq = 'max liquid'
+    min_vol = 'min liquid'
+    max_vol = 'max liquid'
     fluid = 'fluid'
 
     def __init__(self):
@@ -34,19 +34,22 @@ class DebitLimits:
             return new_df.iloc[len(new_df)-1]
 
         else:
-            new_df.loc[new_df.shape[1] - 1, DebitLimits.date] = date
-            new_df[DebitLimits.well] = well
-            new_df[DebitLimits.valve] = segment
-            new_df[DebitLimits.min_liq] = 0
-            new_df[DebitLimits.max_liq] = float('inf')
-            new_df[DebitLimits.fluid] = 'FLUID'
+            for_series = {
+                DebitLimits.date: date,
+                DebitLimits.well: well,
+                DebitLimits.valve: segment,
+                DebitLimits.min_vol: 0,
+                DebitLimits.max_vol: float('inf'),
+                DebitLimits.fluid: 'FLUID'
+            }
+            new_df = pd.Series(for_series)
             return new_df
 
 
 class DebitLimitsConstructor:
 
     @staticmethod
-    def create_debit_limits_schedule(df) -> DebitLimits:
+    def create_debit_limits_sch(df) -> DebitLimits:
         debit_limits = DebitLimits()
         df = DebitLimitsConstructor.prepare_date(df)
         debit_limits.df = df

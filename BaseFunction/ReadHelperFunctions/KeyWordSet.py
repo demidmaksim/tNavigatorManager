@@ -38,7 +38,7 @@ def __read_bounds(line: list) -> dict:
                 well_segment = well_segment.split(':')[1]
             else:
                 well = well_segment
-                well_segment = None
+                well_segment = -1
 
             well_node = [well, well_segment]
 

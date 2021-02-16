@@ -1,5 +1,5 @@
-import pandas as pd
-from AdditionalSchedule.Bound import *
+import datetime as dt
+from AdditionalSchedule.Schedual_helper import *
 
 
 class Schedule:
@@ -7,17 +7,14 @@ class Schedule:
         self.bounds = None
         self.groups = None
 
-    def get_current_boundaries(self, now_time):
+    def get_current_boundaries(self, now_time: dt, inflow_zone_order: list):
+        linear_constraint = create_linear_constraint()
+        add_object_bound(inflow_zone_order, self.bounds, now_time,
+                         linear_constraint)
 
-        dict_fo_df = dict()
-        for key in self.bounds.columns:
-            if key == 'date':
-                dict_fo_df[key] = now_time
-            else:
-                dict_fo_df[key] = None
 
-        add_df = pd.DataFrame(dict_fo_df, index=[0])
-        self.bounds.append(add_df, ignore_index=True)
+
+        return linear_constraint
 
     def report(self):
 
@@ -40,7 +37,7 @@ class ScheduleConstructor:
             bounds = additional_data['BOUNDS']
             schedule.bounds = pd.DataFrame(bounds)
             df = ScheduleConstructor.rename(schedule.bounds)
-            schedule.bounds = DebitLimitsConstructor.create_debit_limits_schedule(df)
+            schedule.bounds = DebitLimitsConstructor.create_debit_limits_sch(df)
 
         if 'MAKEGROUPLIST' in additional_data.keys():
             groups = additional_data['MAKEGROUPLIST']
