@@ -20,6 +20,14 @@ class MyLinearConstraint:
         self.__ub.append(ub)
         self.__fluid_type.append(__fluid_type)
 
+    def calculate_water_cut(self, water_cut: np.array):
+        self.__A = np.array(self.__A)
+        for line_id, line in self.__fluid_type:
+            if line == 'OIL':
+                self.__A[line_id, :] = self.__A[line_id, :] * (1 - water_cut)
+            elif line == 'WATER':
+                self.__A[line_id, :] = self.__A[line_id, :] * water_cut
+
     def get_report(self):
         print(f'len: {len(self.__lb)}\tlc.lb: {self.__lb}')
         print(f'len: {len(self.__ub)}\tlc.ub: {self.__ub}')

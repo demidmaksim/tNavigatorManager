@@ -6,9 +6,9 @@ from AdditionalSchedule.Schedule import *
 class Field:
     def __init__(self, name: str):
         self.name: str = name
-        self.wells = dict()
-        self.bounds: dict or None = None
-        self.Schedule = None
+        self.wells: dict = dict()
+        self.bounds: DebitLimits or None = None
+        self.Schedule: Schedule or None = None
 
     def report(self):
         print(F'Name field: {self.name}')

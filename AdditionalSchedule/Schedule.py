@@ -4,13 +4,16 @@ from AdditionalSchedule.MyLinearConstraint import *
 
 class Schedule:
     def __init__(self):
-        self.bounds = None
-        self.groups = None
+        self.bounds: DebitLimits or None = None
+        self.groups: dict or None = None
 
-    def get_current_boundaries(self, now_time: dt, inflow_zone_order: list):
+    def get_current_boundaries(self, now_time: dt, inflow_zone_order: list,
+                               water_cut: np.array):
         my_linear_constraint = create_linear_constraint()
         add_bound(now_time, my_linear_constraint, self.bounds,
                   self.groups, inflow_zone_order)
+        my_linear_constraint.calculate_water_cut(water_cut)
+
         return my_linear_constraint
 
     def report(self):
