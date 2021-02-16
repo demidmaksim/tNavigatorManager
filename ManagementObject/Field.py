@@ -56,34 +56,42 @@ class FieldConstructor:
         return Field(name)
 
     @staticmethod
-    def add_well(field: Field, well: Well):
+    def __add_well(field: Field, well: Well):
         field.wells[well.name] = well
 
     @staticmethod
-    def add_schedule(field: Field, additional_data: dict):
+    def __add_schedule(field: Field, additional_data: dict):
         schedule = ScheduleConstructor.create_schedule(additional_data)
         field.Schedule = schedule
 
     @staticmethod
-    def add_inflowzone(field: Field, inflowzone: InflowZone):
+    def __add_inflowzone(field: Field, inflowzone: InflowZone):
         if inflowzone.well not in field.wells:
             well = WellConstructor.create_well(inflowzone.well)
             WellConstructor.add_zone(well, inflowzone)
-            FieldConstructor.add_well(field, well)
+            FieldConstructor.__add_well(field, well)
         else:
             well = field.wells[inflowzone.well]
             WellConstructor.add_zone(well, inflowzone)
 
     @staticmethod
-    def create_field() -> Field:
-        field = FieldConstructor.__create_empty_field('name')
+    def __read_additional_schedule(field):
         additional_data = read_additional_schedule()
 
         for inflowzone in additional_data['INFLOWZO']:
             inflowzone = InflowZoneConstructor.from_dict(inflowzone)
-            FieldConstructor.add_inflowzone(field, inflowzone)
+            FieldConstructor.__add_inflowzone(field, inflowzone)
 
-        FieldConstructor.add_schedule(field, additional_data)
+        FieldConstructor.__add_schedule(field, additional_data)
+
+    @staticmethod
+    def read_summary_file():
+        pass
+
+    @staticmethod
+    def create_field() -> Field:
+        field = FieldConstructor.__create_empty_field('name')
+        FieldConstructor.__read_additional_schedule(field)
 
         return field
 

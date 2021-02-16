@@ -16,4 +16,3 @@ lc.get_report()
 lc = lc.to_scipy()
 sol = minimization_water(np.arange(0, 25), lc)
 print(sol)
-
