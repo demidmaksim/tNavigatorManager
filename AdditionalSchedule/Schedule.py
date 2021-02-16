@@ -8,13 +8,10 @@ class Schedule:
         self.groups = None
 
     def get_current_boundaries(self, now_time: dt, inflow_zone_order: list):
-        linear_constraint = create_linear_constraint()
-        add_object_bound(inflow_zone_order, self.bounds, now_time,
-                         linear_constraint)
-
-
-
-        return linear_constraint
+        my_linear_constraint = create_linear_constraint()
+        add_bound(now_time, my_linear_constraint, self.bounds,
+                  self.groups, inflow_zone_order)
+        return my_linear_constraint
 
     def report(self):
 
@@ -41,7 +38,10 @@ class ScheduleConstructor:
 
         if 'MAKEGROUPLIST' in additional_data.keys():
             groups = additional_data['MAKEGROUPLIST']
-            schedule.groups = pd.DataFrame.from_dict(groups)
+            new_groups =dict()
+            for group in groups:
+                new_groups[list(group.keys())[0]] = group[list(group.keys())[0]]
+            schedule.groups = new_groups
 
         return schedule
 

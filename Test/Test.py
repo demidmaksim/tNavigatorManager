@@ -11,7 +11,5 @@ print(Field.get_pattern())
 
 lc = Field.Schedule.get_current_boundaries(t, Field.get_pattern())
 
-print(f'len: {len(lc.__lb)}\tlc.lb: {lc.__lb}')
-print(f'len: {len(lc.__ub)}\tlc.ub: {lc.__ub}')
-print(f'len: {len(lc.__A)}\nlc.A: {np.array(lc.__A)}')
+lc.get_report()
 

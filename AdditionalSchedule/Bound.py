@@ -28,11 +28,17 @@ class DebitLimits:
         new_df = self.df[pattern]
 
         if new_df.shape[0] != 0:
-            new_df.loc[new_df.shape[0], DebitLimits.date] = date
-            new_df.sort_values(DebitLimits.date)
-            new_df = new_df.interpolate(method='pad')
-            return new_df.iloc[len(new_df)-1]
-
+            print(new_df)
+            for_series = {
+                DebitLimits.date: date,
+                DebitLimits.well: new_df[DebitLimits.well].values[-1],
+                DebitLimits.valve: new_df[DebitLimits.valve].values[-1],
+                DebitLimits.min_vol: new_df[DebitLimits.min_vol].values[-1],
+                DebitLimits.max_vol: new_df[DebitLimits.max_vol].values[-1],
+                DebitLimits.fluid: new_df[DebitLimits.fluid].values[-1]
+            }
+            new_df = pd.Series(for_series)
+            return new_df
         else:
             for_series = {
                 DebitLimits.date: date,
@@ -40,7 +46,7 @@ class DebitLimits:
                 DebitLimits.valve: segment,
                 DebitLimits.min_vol: 0,
                 DebitLimits.max_vol: float('inf'),
-                DebitLimits.fluid: 'FLUID'
+                DebitLimits.fluid: 'LIQUID'
             }
             new_df = pd.Series(for_series)
             return new_df
