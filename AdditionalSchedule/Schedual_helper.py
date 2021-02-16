@@ -14,7 +14,7 @@ class MyLinearConstraint:
     def to_scipy(self):
         return LinearConstraint(self.__A, self.__lb, self.__ub)
 
-    def add_bound(self, a: list, lb: float, ub: float, __fluid_type:str):
+    def add_bound(self, a: list, lb: float, ub: float, __fluid_type: str):
         self.__A.append(a)
         self.__lb.append(lb)
         self.__ub.append(ub)
@@ -40,18 +40,16 @@ def definition_valve_well(wall_name: str, inflow_zone_order: list):
     return list(valve_in_well)
 
 
-def get_border_pattern(well_list, inflow_zone_order, well_valves=None):
-    border_pattern = np.array([0 for _ in range(len(inflow_zone_order))])
+def get_border_pattern(wells: list, inflow_zone_order: list) -> list:
+    border_pattern = [0 for _ in range(len(inflow_zone_order))]
 
-    for well in well_list:
-        if well_valves is None:
-            well_valves = definition_valve_well(well, inflow_zone_order)
-
+    for well in wells:
+        well_valves = definition_valve_well(well, inflow_zone_order)
         for valve in well_valves:
             ind = inflow_zone_order.index([well, valve])
             border_pattern[ind] = 1
 
-    return border_pattern
+    return list(border_pattern)
 
 
 def __add_object_bound(inflow_zone_order: list,
@@ -75,7 +73,7 @@ def __add_object_bound(inflow_zone_order: list,
 
 
 def __add_well_bound(linear_constraint, now_time, bounds,
-                     well, inflow_zone_order):
+                     well, inflow_zone_order) -> None:
 
     all_valve = definition_valve_well(well, inflow_zone_order)
 
@@ -88,27 +86,33 @@ def __add_well_bound(linear_constraint, now_time, bounds,
                                     bound[DebitLimits.fluid])
 
 
-def __add_field_bound(linear_constraint, now_time, bounds, inflow_zone_order):
-    bound = bounds.get_limit(now_time, 'FIELD', -1)
+def __add_field_bound(constraint: MyLinearConstraint,
+                      time: dt, bounds: DebitLimits,
+                      inflow_zone_order: list) -> None:
+
+    bound = bounds.get_limit(time, 'FIELD', -1)
     border_pattern = [1] * len(inflow_zone_order)
-    linear_constraint.add_bound(border_pattern,
-                                bound[DebitLimits.min_vol],
-                                bound[DebitLimits.max_vol],
-                                bound[DebitLimits.fluid])
+    constraint.add_bound(border_pattern,
+                         bound[DebitLimits.min_vol],
+                         bound[DebitLimits.max_vol],
+                         bound[DebitLimits.fluid])
 
 
-def __add_group_bound(linear_constraint, now_time, bounds,
-                      well_list, group_name: str, inflow_zone_order):
-    bound = bounds.get_limit(now_time, group_name, -1)
+def __add_group_bound(constraint: MyLinearConstraint, time: dt,
+                      bounds: DebitLimits, well_list, group_name: str,
+                      inflow_zone_order: list) -> None:
+
+    bound = bounds.get_limit(time, group_name, -1)
     border_pattern = get_border_pattern(well_list, inflow_zone_order)
 
-    linear_constraint.add_bound(border_pattern,
-                                bound[DebitLimits.min_vol],
-                                bound[DebitLimits.max_vol],
-                                bound[DebitLimits.fluid])
+    constraint.add_bound(border_pattern,
+                         bound[DebitLimits.min_vol],
+                         bound[DebitLimits.max_vol],
+                         bound[DebitLimits.fluid])
 
 
-def add_bound(time, constraint, bounds, groups, infl_zone_order):
+def add_bound(time: dt, constraint: MyLinearConstraint,
+              bounds: DebitLimits, groups: dict, infl_zone_order: list) -> None:
     __add_object_bound(infl_zone_order, bounds, time, constraint)
 
     bound_groups = list(pd.unique(bounds.df[DebitLimits.well]))
@@ -124,5 +128,3 @@ def add_bound(time, constraint, bounds, groups, infl_zone_order):
         elif group in list(groups.keys()):
             __add_group_bound(constraint, time, bounds,
                               groups[group], group, infl_zone_order)
-
-    return constraint
