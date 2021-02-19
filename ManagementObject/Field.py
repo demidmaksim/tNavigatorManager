@@ -1,12 +1,14 @@
 from ManagementObject.Well import *
 from BaseFunction.Readers.Loader import *
 from ManagementObject.AdditionalSchedule.Schedule import *
+from Eclipse_Binary_Parser.Summary.SUMMARYReader import SUMMARYReader
+import time
 
 
 class Field:
     def __init__(self, name: str):
         self.name: str = name
-        self.wells: dict = dict()
+        self.wells: Dict[str, Well] = dict()
         self.bounds: DebitLimits or None = None
         self.Schedule: Schedule or None = None
 
@@ -22,6 +24,13 @@ class Field:
                 pattern.append([well_name, inflow_zone])
 
         return pattern
+
+    def get_inflow_zone(self):
+        pattern = self.get_pattern()
+        for field_object in pattern:
+            well_name = field_object[0]
+            segment = field_object[1]
+            yield self.wells[well_name].InflowZones[segment]
 
     def get_params(self, pattern: list, param: str) -> list:
         params_list = []
@@ -85,14 +94,73 @@ class FieldConstructor:
         FieldConstructor.__add_schedule(field, additional_data)
 
     @staticmethod
-    def read_summary_file():
-        pass
+    def __read_summary_file(field: Field):
+        t = time.time()
+        smspec = SUMMARYReader('tNavigatorManager.SMSPEC')
+        target_params = {
+            "well_params": ['WOPR', 'WWPR'],
+            'valve_params': ['SOFR', 'SWFR']
+        }
+
+        wells = []
+        main_params = []
+        nums = []
+
+        for inflow_zone in field.get_inflow_zone():
+            well = inflow_zone.well
+            segment = inflow_zone.segment
+            if segment == 1:
+                for param_id, param in enumerate(target_params['well_params']):
+                    wells.append(well)
+                    main_params.append(param)
+                    nums.append(None)
+            else:
+                for param in target_params['valve_params']:
+                    wells.append(well)
+                    main_params.append(param)
+                    nums.append(segment)
+
+        data_params = smspec.get(wells, main_params, nums)
+        positions = smspec.get_position_matrix(wells, main_params, nums)
+
+        for inflow_zone in field.get_inflow_zone():
+            well = inflow_zone.well
+            segment = inflow_zone.segment
+            if segment == 1:
+                params = target_params['valve_params']
+                for param_id, param in enumerate(target_params["well_params"]):
+                    target = [well, param, None]
+                    ind = positions.index(target)
+                    inflow_zone.set_params(params[param_id], data_params[:, ind])
+                    # print(f'param:  {params[param_id]}\t len:  {len(data_params[:, ind])}\n{data_params[:, ind]}')
+            else:
+                for param in target_params['valve_params']:
+                    target = [well, param, segment]
+                    ind = positions.index(target)
+                    inflow_zone.set_params(param, data_params[:, ind])
+                    # print(f'param:  {param}\tlen:  {len(data_params[:, ind])}\n{data_params[:, ind]}')
+
+        print(f'DownLoad Time: {round(time.time() - t, 3)}')
+
+        for inflow_zone in field.get_inflow_zone():
+            well = inflow_zone.well
+            segment = inflow_zone.segment
+            if segment == 1:
+                params = ['SOFR', 'SWFR']
+                for param_id, param in enumerate(['WOPR', 'WWPR']):
+                    param_data = smspec.get(well, param, None)
+                    inflow_zone.set_params(params[param_id], param_data)
+            else:
+                for param in ['SOFR', 'SWFR']:
+                    param_data = smspec.get(well, param, segment)
+                    inflow_zone.set_params(param, param_data)
+        print(f'DownLoad Time: {round(time.time() - t, 3)}')
 
     @staticmethod
     def create_field() -> Field:
         field = FieldConstructor.__create_empty_field('name')
         FieldConstructor.__read_additional_schedule(field)
-
+        FieldConstructor.__read_summary_file(field)
         return field
 
     @staticmethod
