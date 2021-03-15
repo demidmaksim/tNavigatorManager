@@ -1,8 +1,22 @@
 from BaseFunction.Readers.ReadHelperFunctions.KeyWordSet import *
-from For_Delite.Crutch import *
+from tNav.For_Debugging import *
+
+__additional_schedule_name = 'Additional Schedule.INC'
+
+
+def get_additional_schedule_link() -> str:
+    """
+    :return: ссылку на файл Additional Schedule.INC
+    """
+    folder = get_project_folder().replace('/', '\\') + '\\'
+    return folder + __additional_schedule_name
 
 
 def read_additional_schedule() -> dict:
+    """
+    Чтение файла Additional Schedule.INC
+    :return: словарь с разделением по ключевым словам данных прочитанных в файле
+    """
     addit_sch = get_additional_schedule_link()
     keyword_data = dict()
     with open(addit_sch, 'r') as file:

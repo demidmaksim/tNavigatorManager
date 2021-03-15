@@ -10,8 +10,10 @@ def derivative_vector(_, water_cut):
     return water_cut
 
 
-def minimization_water(water_cut, linear_constraint):
+def simple_minimization_water(water_cut, my_linear_constraint):
     first_approach = np.ones(len(water_cut)) * 0.1
+    # print(my_linear_constraint.get_report())
+    linear_constraint = my_linear_constraint.to_scipy()
     sol = minimize(target_function, x0=first_approach, args=(water_cut,),
                    constraints=[linear_constraint],
                    method='SLSQP', jac=derivative_vector)

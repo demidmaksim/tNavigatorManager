@@ -1,4 +1,5 @@
 import pandas as pd
+import datetime as dt
 
 
 class DebitLimits:
@@ -13,23 +14,38 @@ class DebitLimits:
     def __init__(self):
         self.df = None
 
-    def get_limit(self, date, well, segment):
+    def __get_target_value(self, date, well, segment, special_fluid):
 
-        pattern1 = self.df[DebitLimits.well] == well
+        pattern1 = self.df[DebitLimits.well].values == well
 
         if segment is not None:
-            pattern2 = self.df[DebitLimits.valve] == segment
+            pattern2 = self.df[DebitLimits.valve].values == segment
         else:
             pattern2 = self.df[DebitLimits.valve].isna()
 
         pattern3 = self.df[DebitLimits.date] <= date
-        pattern = pattern1 & pattern2 & pattern3
+        if special_fluid is None:
+            pattern = pattern1 & pattern2 & pattern3
+        else:
+            pattern4 = self.df[DebitLimits.fluid] == special_fluid
+            pattern = pattern1 & pattern2 & pattern3 & pattern4
 
-        new_df = self.df[pattern]
+        return self.df[pattern]
+
+    def get_limit(self, date: dt, well: str, segment: int,
+                  special_fluid: str) -> dict:
+        """
+        Возвращает лимит по текущей скважине из дополнительного расписания.
+        :param date: текущая дата
+        :param well: имя скважины
+        :param segment: имя сегмента приуроченого к данной скважине
+        :param special_fluid: имя флюида (нефть/жидкость)
+         по которому ищится ограничение
+        """
+        new_df = self.__get_target_value(date, well, segment, special_fluid)
 
         if new_df.shape[0] != 0:
-
-            for_series = {
+            results = {
                 DebitLimits.date: date,
                 DebitLimits.well: new_df[DebitLimits.well].values[-1],
                 DebitLimits.valve: new_df[DebitLimits.valve].values[-1],
@@ -37,10 +53,10 @@ class DebitLimits:
                 DebitLimits.max_vol: new_df[DebitLimits.max_vol].values[-1],
                 DebitLimits.fluid: new_df[DebitLimits.fluid].values[-1]
             }
-            new_df = pd.Series(for_series)
-            return new_df
+            return results
+
         else:
-            for_series = {
+            results = {
                 DebitLimits.date: date,
                 DebitLimits.well: well,
                 DebitLimits.valve: segment,
@@ -48,21 +64,31 @@ class DebitLimits:
                 DebitLimits.max_vol: float('inf'),
                 DebitLimits.fluid: 'LIQUID'
             }
-            new_df = pd.Series(for_series)
-            return new_df
+
+            return results
 
 
 class DebitLimitsConstructor:
 
     @staticmethod
-    def create_debit_limits_sch(df) -> DebitLimits:
+    def create_debit_limits(df: pd.DataFrame) -> DebitLimits:
+        """
+        Создает экземпляр класса с огрничениями по дебиту нефти и жидкости
+        :param df: DataFrame с огрничениями
+        :return: экземляр класса DebitLimits
+        """
         debit_limits = DebitLimits()
         df = DebitLimitsConstructor.prepare_date(df)
         debit_limits.df = df
         return debit_limits
 
     @staticmethod
-    def prepare_date(df) -> pd.DataFrame:
+    def prepare_date(df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Кофектор столбца со временем в формат DataFrame
+        :param df: исодный DataFrame
+        :return: конвертированный DataFrame
+        """
         dates = pd.to_datetime(df[DebitLimits.date])
         df[DebitLimits.date] = dates
         return df

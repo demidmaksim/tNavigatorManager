@@ -2,7 +2,12 @@ from BaseFunction.Readers.ReadHelperFunctions.ASCII import*
 
 
 def __read_construction(line: list) -> dict:
-
+    """
+    Функция читает строку как строку в которой записаны данные о
+     конструкции скважин
+    :param line: лист со строкой разделенной по словам для записи
+    :return: словарь с прочитанными данными со строки
+    """
     try:
         well, bore, segment = line[0], line[1], line[2]
         dev_type, max_size = line[3], line[4]
@@ -29,6 +34,11 @@ def __read_construction(line: list) -> dict:
 
 
 def __read_bounds(line: list) -> dict:
+    """
+    Функция читает строку как строку в которой записаны данные об ограничениях
+    :param line: лист со строкой разделенной по словам для записи
+    :return: словарь с прочитанными данными со строки
+    """
 
     try:
         well_node = [None, None]
@@ -48,9 +58,9 @@ def __read_bounds(line: list) -> dict:
         border = {
             'date': date,
             'well': well_node[0],
-            'valve/segment': well_node[1],
-            'min liquid': min_liquid,
-            'max liquid': max_liquid,
+            'valve/segment': int(well_node[1]),
+            'min liquid': float(min_liquid),
+            'max liquid': float(max_liquid),
             'fluid': fluid
         }
 
@@ -69,6 +79,11 @@ def __read_bounds(line: list) -> dict:
 
 
 def __read_group_list(line: list):
+    """
+    Функция читает строку как строку, в которой записаны данные о группах
+    :param line: лист со строкой разделенной по словам для записи
+    :return: словарь с прочитанными данными со строки
+    """
 
     groups = dict()
     try:
@@ -88,6 +103,10 @@ def __read_group_list(line: list):
     return groups
 
 
+"""
+Словарь соответсвия ключевого слова и вызываемой функции
+"""
+
 dict_for_fun = {
     'INFLOWZO': __read_construction,
     'BOUNDS': __read_bounds,
@@ -96,6 +115,9 @@ dict_for_fun = {
 
 
 def this_is_keyword(line: str) -> bool:
+    """
+    Проверка строки на ключевое слово
+    """
     if line.split()[0].upper() in dict_for_fun.keys():
         return True
     else:
@@ -103,6 +125,13 @@ def this_is_keyword(line: str) -> bool:
 
 
 def read_keyword(list_file: list, key: str) -> list:
+    """
+
+    :param list_file: лист содержащий строки из файла
+    :param key: ключвое слово которое необходимо записать
+    :return: словарь с данными записаными в данном ключевом слове
+    """
+
     data = []
 
     while list_file:
